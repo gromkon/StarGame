@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class StarGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
+	Texture backgroundImg;
 
 	//позволяет вырезать части текстур
 	TextureRegion region;
@@ -20,6 +21,7 @@ public class StarGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+		backgroundImg = new Texture("background.jpg");
 		img = new Texture("badlogic.jpg");
 		//вырезаем из точки (x, y), картинку размером (width, height)
 		region = new TextureRegion(img, 50, 50, 100, 100);
@@ -38,6 +40,9 @@ public class StarGame extends ApplicationAdapter {
 
 		//начало передачи текстур
 		batch.begin();
+		//фон
+		batch.setColor(1f, 1f, 1f, 1f);
+		batch.draw(backgroundImg, 0, 0, 640, 480);
 
 		batch.setColor(0.3f, 0.4f, 0.1f, 1f);
 		batch.draw(img, 0, 0, 100, 100);
@@ -54,5 +59,6 @@ public class StarGame extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
+		backgroundImg.dispose();
 	}
 }
