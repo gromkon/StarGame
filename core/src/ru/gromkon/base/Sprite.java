@@ -34,13 +34,10 @@ public class Sprite extends Rect {
         setWidth(height * aspect);
     }
 
-    public void update(float delta) {
-
-    }
+    public void update(float delta) {}
 
 
-    public void resize(Rect worldBounds) {
-    }
+    public void resize(Rect worldBounds) {}
 
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         return false;
