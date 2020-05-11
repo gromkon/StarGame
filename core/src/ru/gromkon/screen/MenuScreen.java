@@ -1,7 +1,6 @@
 package ru.gromkon.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
@@ -11,8 +10,15 @@ public class MenuScreen extends BaseScreen {
     private Texture img;
 
     private Vector2 pos;
+    private Vector2 newPos;
+
     private Vector2 v;
-    private Vector2 gravity;
+    private float speed;
+    private float wayLen;
+    private boolean isNewPos;
+
+    private int countSteps;
+
 
     private Vector2 touch;
 
@@ -22,8 +28,14 @@ public class MenuScreen extends BaseScreen {
 
         img = new Texture("badlogic.jpg");
         pos = new Vector2();
-        v = new Vector2(1, 2);
-        gravity = new Vector2(0, -0.05f);
+
+        newPos = new Vector2();
+        speed = 1.0f;
+
+        wayLen = 0;
+        countSteps = 0;
+        v = new Vector2();
+        isNewPos = false;
 
         touch = new Vector2();
     }
@@ -32,9 +44,25 @@ public class MenuScreen extends BaseScreen {
     public void render(float delta) {
         super.render(delta);
 
-        // обработка данных
-        pos.add(v);
-        v.add(gravity);
+        if (isNewPos) {
+            if (newPos.x != pos.x && newPos.y != pos.y) {
+                wayLen = newPos.cpy().sub(pos).len();
+                countSteps = (int)Math.floor(wayLen / speed) + 1;
+                v.x = (newPos.x - pos.x) / countSteps;
+                v.y = (newPos.y - pos.y) / countSteps;
+            }
+            isNewPos = false;
+        }
+
+        if (countSteps > 1) {
+            pos.add(v);
+            countSteps--;
+        } else if (countSteps == 1) {
+            pos.set(newPos);
+            countSteps--;
+        }
+
+
 
         // начало передачи текстур
         batch.begin();
@@ -60,7 +88,8 @@ public class MenuScreen extends BaseScreen {
         // мы из высоты экрана вычитаем координаты событий
         touch.set(screenX, Gdx.graphics.getHeight() - screenY);
         System.out.println("touchDown touch = " + touch);
-        pos.set(touch);
+        newPos.set(touch);
+        isNewPos = true;
         return super.touchDown(screenX, screenY, pointer, button);
     }
 }
