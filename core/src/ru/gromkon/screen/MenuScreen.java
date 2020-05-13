@@ -16,8 +16,6 @@ public class MenuScreen extends BaseScreen {
     private Background background;
     private Logo logo;
 
-    private Vector2 pos;
-
     @Override
     public void show() {
         super.show();
@@ -27,9 +25,6 @@ public class MenuScreen extends BaseScreen {
 
         logo = new Logo(img);
         background = new Background(bg);
-
-        pos = new Vector2();
-        pos.set(0, 0);
     }
 
     @Override
@@ -41,11 +36,15 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void render(float delta) {
         super.render(delta);
+        update(delta);
+        draw();
+    }
 
-        if (logo.isNeedMove()) {
-            logo.nextMove();
-        }
+    private void update(float delta) {
+        logo.update(delta);
+    }
 
+    private void draw() {
         batch.begin();
         background.draw(batch);
         logo.draw(batch);
@@ -60,13 +59,8 @@ public class MenuScreen extends BaseScreen {
     }
 
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        // для событий (0, 0) находится в верхнем левом углу
-        // для отрисовки (0, 0) находится в нижнем левом углу
-        // поэтому, что бы координаты события и отрисовки совпадали
-        // мы из высоты экрана вычитаем координаты событий
-        logo.moveTo(new Vector2(screenX, screenBounds.getHeight() - screenY).mul(screenToWorld));
-
-        return super.touchDown(screenX, screenY, pointer, button);
+    public boolean touchDown(Vector2 touch, int pointer, int button) {
+        logo.touchDown(touch, pointer, button);
+        return super.touchDown(touch, pointer, button);
     }
 }

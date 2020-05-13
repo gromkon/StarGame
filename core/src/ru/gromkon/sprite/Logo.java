@@ -11,17 +11,13 @@ public class Logo extends Sprite {
 
     private final float V_LEN = 0.01f;
 
-    private boolean needMove;
-
-    private Vector2 newPos;
+    private Vector2 touch;
     private Vector2 v;
     private Vector2 common;
 
     public Logo(Texture texture) {
         super(new TextureRegion(texture));
-
-        needMove = false;
-        newPos = new Vector2();
+        touch = new Vector2();
         common = new Vector2();
         v = new Vector2();
     }
@@ -29,31 +25,24 @@ public class Logo extends Sprite {
     @Override
     public void resize(Rect worldBounds) {
         setHeightProportion(0.2f);
-        this.pos.set(worldBounds.pos);
     }
 
-    public void moveTo(Vector2 touch) {
-        newPos.set(touch.x + halfWidth, touch.y + halfHeight);
-        System.out.println("pos " + pos);
-
-        v.set(newPos.cpy().sub(pos));
-        v.scl(V_LEN);
-
-        needMove = true;
-    }
-
-    public void nextMove() {
-        common.set(newPos);
+    @Override
+    public void update(float delta) {
+        common.set(touch);
         if (common.sub(pos).len() > V_LEN) {
             pos.add(v);
         } else {
-            pos.set(newPos);
+            pos.set(touch);
             v.setZero();
-            needMove = false;
         }
     }
 
-    public boolean isNeedMove() {
-        return needMove;
+    @Override
+    public boolean touchDown(Vector2 touch, int pointer, int button) {
+        this.touch.set(touch);
+        v.set(touch.sub(pos).setLength(V_LEN));
+        return false;
     }
+
 }
