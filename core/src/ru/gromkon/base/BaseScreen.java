@@ -136,7 +136,7 @@ public class BaseScreen implements Screen, InputProcessor {
     }
 
     public boolean touchDragged(Vector2 touch, int pointer) {
-        System.out.println("touchDragged " + touch);
+//        System.out.println("touchDragged " + touch);
         return false;
     }
 
