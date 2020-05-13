@@ -20,11 +20,9 @@ public class MenuScreen extends BaseScreen {
     private final Game game;
 
     private Texture bg;
-
-    private TextureAtlas atlas;
-
     private Background background;
 
+    private TextureAtlas atlas;
     private ButtonExit buttonExit;
     private ButtonPlay buttonPlay;
     private Star[] stars;
@@ -37,8 +35,6 @@ public class MenuScreen extends BaseScreen {
     public void show() {
         super.show();
 
-        bg = new Texture("textures/background_new2.jpg");
-
         atlas = new TextureAtlas(Gdx.files.internal("textures/menuAtlas.tpack"));
         buttonExit = new ButtonExit(atlas);
         buttonPlay = new ButtonPlay(atlas, game);
@@ -47,6 +43,7 @@ public class MenuScreen extends BaseScreen {
             stars[i] = new Star(atlas);
         }
 
+        bg = new Texture("textures/background_new2.jpg");
         background = new Background(bg);
     }
 
