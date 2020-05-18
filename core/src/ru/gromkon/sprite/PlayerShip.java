@@ -1,8 +1,6 @@
 package ru.gromkon.sprite;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.gromkon.base.Sprite;
@@ -22,8 +20,8 @@ public class PlayerShip extends Sprite {
 
     private Rect worldBounds;
 
-    public PlayerShip(TextureRegion texture) {
-        super(texture);
+    public PlayerShip(TextureAtlas atlas) {
+        super(atlas.findRegion("main_ship"), 1, 2, 2);
         touch = new Vector2();
         common = new Vector2();
         v = new Vector2();
