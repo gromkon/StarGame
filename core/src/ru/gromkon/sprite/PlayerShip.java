@@ -1,5 +1,7 @@
 package ru.gromkon.sprite;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -16,7 +18,11 @@ public class PlayerShip extends Sprite {
     private static final float BULLET_SPEED_X = 0;
     private static final float BULLET_SPEED_Y = 0.4f;
     private static final float BULLET_SIZE = 0.01f;
-    private static final int DAMAGE = 1;
+    private int damage;
+    private static final int BULLET_DELAY = 20;
+    private int currentBulletDelay;
+    private Vector2 bulletStartPos;
+    private final Sound bulletSound;
 
     private final float V_LEN = 0.01f;
 
@@ -32,12 +38,16 @@ public class PlayerShip extends Sprite {
     private TextureRegion bulletRegion;
     private Vector2 bulletV;
 
-    public PlayerShip(TextureAtlas atlas, BulletPool bulletPool) {
+    public PlayerShip(TextureAtlas atlas, BulletPool bulletPool, Sound bulletSound) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
 
         this.bulletPool = bulletPool;
         bulletRegion = atlas.findRegion("bulletMainShip");
+        damage = 1;
         bulletV = new Vector2(BULLET_SPEED_X, BULLET_SPEED_Y);
+        currentBulletDelay = 0;
+        bulletStartPos = new Vector2();
+        this.bulletSound = bulletSound;
 
         touch = new Vector2();
         common = new Vector2();
@@ -48,7 +58,20 @@ public class PlayerShip extends Sprite {
 
     @Override
     public void update(float delta) {
-        shoot();
+        checkShoot();
+        checkMove();
+    }
+
+    private void checkShoot() {
+        if (currentBulletDelay == BULLET_DELAY) {
+            shoot();
+            currentBulletDelay = 0;
+        } else {
+            currentBulletDelay++;
+        }
+    }
+
+    private void checkMove() {
         common.set(touch);
         if (common.sub(pos).len() > V_LEN) {
             pos.add(v);
@@ -62,12 +85,14 @@ public class PlayerShip extends Sprite {
     }
 
     private void checkBounds() {
-        if (getLeft() + getHalfWidth() < worldBounds.getLeft() || getRight() - getHalfWidth() > worldBounds.getRight()) {
+        if (getLeft() + getHalfWidth() < worldBounds.getLeft() ||
+                getRight() - getHalfWidth() > worldBounds.getRight()) {
             pos.add(vResistX);
             v.scl(0.1f);
             vResistX.scl(0.1f);
         }
-        if (getBottom() + getHalfHeight() < worldBounds.getBottom() || getTop() > worldBounds.getTop()) {
+        if (getBottom() + getHalfHeight() < worldBounds.getBottom() ||
+                getTop() > worldBounds.getTop()) {
             pos.add(vResistY);
             v.scl(0.1f);
             vResistY.scl(0.1f);
@@ -75,16 +100,18 @@ public class PlayerShip extends Sprite {
     }
 
     private void shoot() {
+        bulletStartPos.set(pos).add(0, getHalfWidth());
         Bullet bullet = bulletPool.obtain();
         bullet.set(
                 this,
                 bulletRegion,
-                pos,
+                bulletStartPos,
                 bulletV,
                 BULLET_SIZE,
                 worldBounds,
-                DAMAGE
+                damage
         );
+        bulletSound.play(0.03f);
     }
 
     @Override

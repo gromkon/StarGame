@@ -1,5 +1,8 @@
 package ru.gromkon.screen;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -15,7 +18,7 @@ import ru.gromkon.sprite.Star;
 
 public class GameScreen extends BaseScreen {
 
-    private final int STARS_COUNT = 128;
+    private final static int STARS_COUNT = 128;
 
     private Texture bg;
     private Background background;
@@ -23,8 +26,11 @@ public class GameScreen extends BaseScreen {
     private TextureAtlas atlas;
     private PlayerShip playerShip;
     private BulletPool bulletPool;
+    private Sound bulletSound;
 
     private Star[] stars;
+
+    private Music gameMusic;
 
     @Override
     public void show() {
@@ -36,12 +42,18 @@ public class GameScreen extends BaseScreen {
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
 
         bulletPool = new BulletPool();
-        playerShip = new PlayerShip(atlas, bulletPool);
+        bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.mp3"));
+        playerShip = new PlayerShip(atlas, bulletPool, bulletSound);
 
         stars = new Star[STARS_COUNT];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlas);
         }
+
+        gameMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/game_music.mp3"));
+        gameMusic.setVolume(0.03f);
+        gameMusic.setLooping(true);
+        gameMusic.play();
 
     }
 
@@ -90,6 +102,8 @@ public class GameScreen extends BaseScreen {
         bg.dispose();
         bulletPool.dispose();
         atlas.dispose();
+        bulletSound.dispose();
+        gameMusic.dispose();
         super.dispose();
     }
 

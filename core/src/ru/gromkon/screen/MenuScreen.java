@@ -2,6 +2,7 @@ package ru.gromkon.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -15,7 +16,7 @@ import ru.gromkon.sprite.Star;
 
 public class MenuScreen extends BaseScreen {
 
-    private final int STARS_COUNT = 256;
+    private final static int STARS_COUNT = 256;
 
     private final Game game;
 
@@ -26,6 +27,8 @@ public class MenuScreen extends BaseScreen {
     private ButtonExit buttonExit;
     private ButtonPlay buttonPlay;
     private Star[] stars;
+
+    private Music backgroundMusic;
 
     public MenuScreen(Game game) {
         this.game = game;
@@ -38,6 +41,7 @@ public class MenuScreen extends BaseScreen {
         atlas = new TextureAtlas(Gdx.files.internal("textures/menuAtlas.tpack"));
         buttonExit = new ButtonExit(atlas);
         buttonPlay = new ButtonPlay(atlas, game);
+
         stars = new Star[STARS_COUNT];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlas);
@@ -45,6 +49,10 @@ public class MenuScreen extends BaseScreen {
 
         bg = new Texture("textures/background_new2.jpg");
         background = new Background(bg);
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menu_music.mp3"));
+        backgroundMusic.setVolume(0.1f);
+        backgroundMusic.setLooping(true);
+        backgroundMusic.play();
     }
 
     @Override
@@ -85,6 +93,7 @@ public class MenuScreen extends BaseScreen {
     public void dispose() {
         bg.dispose();
         atlas.dispose();
+        backgroundMusic.dispose();
         super.dispose();
     }
 
