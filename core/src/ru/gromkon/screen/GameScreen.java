@@ -1,6 +1,5 @@
 package ru.gromkon.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -33,9 +32,8 @@ public class GameScreen extends BaseScreen {
         background = new Background(bg);
 
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
-        TextureAtlas.AtlasRegion ship = atlas.findRegion("main_ship");
-        TextureRegion notAttackedShip = new TextureRegion(ship, 0, 0, ship.getRegionWidth() / 2, ship.getRegionHeight());
-        playerShip = new PlayerShip(notAttackedShip);
+
+        playerShip = new PlayerShip(atlas);
 
         stars = new Star[STARS_COUNT];
         for (int i = 0; i < stars.length; i++) {
