@@ -1,14 +1,22 @@
 package ru.gromkon.sprite;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.gromkon.base.Sprite;
 import ru.gromkon.math.Rect;
+import ru.gromkon.pool.BulletPool;
 
 public class PlayerShip extends Sprite {
 
+    private static final float SHIP_SIZE = 0.15f;
     private static final float OFFSET_BOTTOM = 0.05f;
+
+    private static final float BULLET_SPEED_X = 0;
+    private static final float BULLET_SPEED_Y = 0.4f;
+    private static final float BULLET_SIZE = 0.01f;
+    private static final int DAMAGE = 1;
 
     private final float V_LEN = 0.01f;
 
@@ -20,8 +28,17 @@ public class PlayerShip extends Sprite {
 
     private Rect worldBounds;
 
-    public PlayerShip(TextureAtlas atlas) {
+    private BulletPool bulletPool;
+    private TextureRegion bulletRegion;
+    private Vector2 bulletV;
+
+    public PlayerShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
+
+        this.bulletPool = bulletPool;
+        bulletRegion = atlas.findRegion("bulletMainShip");
+        bulletV = new Vector2(BULLET_SPEED_X, BULLET_SPEED_Y);
+
         touch = new Vector2();
         common = new Vector2();
         v = new Vector2();
@@ -31,6 +48,7 @@ public class PlayerShip extends Sprite {
 
     @Override
     public void update(float delta) {
+        shoot();
         common.set(touch);
         if (common.sub(pos).len() > V_LEN) {
             pos.add(v);
@@ -56,9 +74,22 @@ public class PlayerShip extends Sprite {
         }
     }
 
+    private void shoot() {
+        Bullet bullet = bulletPool.obtain();
+        bullet.set(
+                this,
+                bulletRegion,
+                pos,
+                bulletV,
+                BULLET_SIZE,
+                worldBounds,
+                DAMAGE
+        );
+    }
+
     @Override
     public void resize(Rect worldBounds) {
-        setHeightProportion(0.2f);
+        setHeightProportion(SHIP_SIZE);
         setBottom(worldBounds.getBottom() + OFFSET_BOTTOM);
         this.worldBounds = worldBounds;
     }

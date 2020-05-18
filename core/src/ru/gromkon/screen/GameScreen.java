@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.gromkon.base.BaseScreen;
 import ru.gromkon.math.Rect;
+import ru.gromkon.pool.BulletPool;
 import ru.gromkon.sprite.Background;
 import ru.gromkon.sprite.PlayerShip;
 import ru.gromkon.sprite.Star;
@@ -21,6 +22,7 @@ public class GameScreen extends BaseScreen {
 
     private TextureAtlas atlas;
     private PlayerShip playerShip;
+    private BulletPool bulletPool;
 
     private Star[] stars;
 
@@ -33,7 +35,8 @@ public class GameScreen extends BaseScreen {
 
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
 
-        playerShip = new PlayerShip(atlas);
+        bulletPool = new BulletPool();
+        playerShip = new PlayerShip(atlas, bulletPool);
 
         stars = new Star[STARS_COUNT];
         for (int i = 0; i < stars.length; i++) {
@@ -55,6 +58,7 @@ public class GameScreen extends BaseScreen {
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        free();
         draw();
     }
 
@@ -62,7 +66,12 @@ public class GameScreen extends BaseScreen {
         for (Star star: stars) {
             star.update(delta);
         }
+        bulletPool.updateActiveSprites(delta);
         playerShip.update(delta);
+    }
+
+    private void free() {
+        bulletPool.freeAllDestroyed();
     }
 
     private void draw() {
@@ -71,6 +80,7 @@ public class GameScreen extends BaseScreen {
         for (Star star: stars) {
             star.draw(batch);
         }
+        bulletPool.drawActiveSprites(batch);
         playerShip.draw(batch);
         batch.end();
     }
@@ -78,6 +88,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public void dispose() {
         bg.dispose();
+        bulletPool.dispose();
         atlas.dispose();
         super.dispose();
     }
