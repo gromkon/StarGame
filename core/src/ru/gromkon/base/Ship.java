@@ -16,6 +16,7 @@ public class Ship extends Sprite {
     protected Rect worldBounds;
 
     protected Vector2 v;
+    protected Vector2 v0;
 
     protected ExplosionPool explosionPool;
 
@@ -36,6 +37,7 @@ public class Ship extends Sprite {
         super(region, rows, cols, frames);
 
         v = new Vector2();
+        v0 = new Vector2();
 
         bulletV = new Vector2();
         bulletStartPos = new Vector2();
@@ -49,6 +51,7 @@ public class Ship extends Sprite {
         this.explosionPool = explosionPool;
 
         v = new Vector2();
+        v0 = new Vector2();
 
         bulletV = new Vector2();
         bulletStartPos = new Vector2();
@@ -62,7 +65,11 @@ public class Ship extends Sprite {
     @Override
     public void update(float delta) {
         super.update(delta);
-        pos.mulAdd(v, delta);
+        if (getTop() > worldBounds.getTop()) {
+            pos.mulAdd(v0, delta);
+        } else {
+            pos.mulAdd(v, delta);
+        }
     }
 
     @Override
