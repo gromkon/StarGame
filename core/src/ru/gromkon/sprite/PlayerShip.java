@@ -3,72 +3,63 @@ package ru.gromkon.sprite;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.gromkon.base.Sprite;
+import ru.gromkon.base.Ship;
 import ru.gromkon.math.Rect;
 import ru.gromkon.pool.BulletPool;
+import ru.gromkon.pool.ExplosionPool;
 
-public class PlayerShip extends Sprite {
+public class PlayerShip extends Ship {
 
     private static final float SHIP_SIZE = 0.15f;
     private static final float OFFSET_BOTTOM = 0.05f;
 
-    private static final float BULLET_SPEED_X = 0;
-    private static final float BULLET_SPEED_Y = 0.4f;
-    private static final float BULLET_SIZE = 0.01f;
-    private int damage;
-    private static final int BULLET_DELAY = 20;
-    private int currentBulletDelay;
-    private Vector2 bulletStartPos;
-    private final Sound bulletSound;
+    private static final float BULLET_HEIGHT = 0.01f;
+    private static final float BULLET_VX = 0;
+    private static final float BULLET_VY = 0.6f;
+    private static final float BULLET_RELOAD_INTERVAL = 0.33f;
+    private static final int BULLET_DAMAGE = 1;
+    private Sound bulletSound;
 
-    private final float V_LEN = 0.01f;
+    private static final int HP = 100;
+
+    private final float V_LEN = 0.005f;
 
     private Vector2 touch;
-    private Vector2 v;
     private Vector2 common;
     private Vector2 vResistX;
     private Vector2 vResistY;
 
-    private Rect worldBounds;
-
-    private BulletPool bulletPool;
-    private TextureRegion bulletRegion;
-    private Vector2 bulletV;
-
-    public PlayerShip(TextureAtlas atlas, BulletPool bulletPool, Sound bulletSound) {
+    public PlayerShip(TextureAtlas atlas, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
 
         this.bulletPool = bulletPool;
         bulletRegion = atlas.findRegion("bulletMainShip");
-        damage = 1;
-        bulletV = new Vector2(BULLET_SPEED_X, BULLET_SPEED_Y);
-        currentBulletDelay = 0;
-        bulletStartPos = new Vector2();
-        this.bulletSound = bulletSound;
+        bulletV.set(BULLET_VX, BULLET_VY);
+        bulletHeight = BULLET_HEIGHT;
+        bulletReloadInterval = BULLET_RELOAD_INTERVAL;
+        bulletReloadTimer = 0f;
+        damage = BULLET_DAMAGE;
+        bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.mp3"));
+        super.setBulletSound(bulletSound);
+
+        this.explosionPool = explosionPool;
+
+        hp = HP;
 
         touch = new Vector2();
         common = new Vector2();
-        v = new Vector2();
         vResistX = new Vector2();
         vResistY = new Vector2();
     }
 
     @Override
     public void update(float delta) {
-        checkShoot();
-        checkMove();
-    }
+        bulletStartPos.set(pos).add(0, getHalfWidth());
+        checkShoot(delta, bulletStartPos);
 
-    private void checkShoot() {
-        if (currentBulletDelay == BULLET_DELAY) {
-            shoot();
-            currentBulletDelay = 0;
-        } else {
-            currentBulletDelay++;
-        }
+        checkMove();
     }
 
     private void checkMove() {
@@ -99,26 +90,11 @@ public class PlayerShip extends Sprite {
         }
     }
 
-    private void shoot() {
-        bulletStartPos.set(pos).add(0, getHalfWidth());
-        Bullet bullet = bulletPool.obtain();
-        bullet.set(
-                this,
-                bulletRegion,
-                bulletStartPos,
-                bulletV,
-                BULLET_SIZE,
-                worldBounds,
-                damage
-        );
-        bulletSound.play(0.03f);
-    }
-
     @Override
     public void resize(Rect worldBounds) {
+        super.resize(worldBounds);
         setHeightProportion(SHIP_SIZE);
         setBottom(worldBounds.getBottom() + OFFSET_BOTTOM);
-        this.worldBounds = worldBounds;
     }
 
     @Override
@@ -144,5 +120,9 @@ public class PlayerShip extends Sprite {
         v.set(touch.sub(pos).setLength(V_LEN));
         vResistX.set(-v.x, 0);
         vResistY.set(0, -v.y);
+    }
+
+    public void dispose() {
+        bulletSound.dispose();
     }
 }

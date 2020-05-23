@@ -33,7 +33,8 @@ public class Bullet extends Sprite {
             Vector2 v0,
             float height,
             Rect worldBounds,
-            int damage) {
+            int damage
+    ) {
         this.owner = owner;
         this.regions[0] = region;
         this.pos.set(pos0);

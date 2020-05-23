@@ -5,15 +5,17 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.gromkon.base.BaseScreen;
 import ru.gromkon.math.Rect;
 import ru.gromkon.pool.BulletPool;
+import ru.gromkon.pool.EnemyPool;
+import ru.gromkon.pool.ExplosionPool;
 import ru.gromkon.sprite.Background;
 import ru.gromkon.sprite.PlayerShip;
 import ru.gromkon.sprite.Star;
+import ru.gromkon.utils.EnemyEmitter;
 
 
 public class GameScreen extends BaseScreen {
@@ -26,7 +28,11 @@ public class GameScreen extends BaseScreen {
     private TextureAtlas atlas;
     private PlayerShip playerShip;
     private BulletPool bulletPool;
-    private Sound bulletSound;
+
+    private EnemyEmitter enemyEmitter;
+    private EnemyPool enemyPool;
+
+    private ExplosionPool explosionPool;
 
     private Star[] stars;
 
@@ -42,8 +48,12 @@ public class GameScreen extends BaseScreen {
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
 
         bulletPool = new BulletPool();
-        bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.mp3"));
-        playerShip = new PlayerShip(atlas, bulletPool, bulletSound);
+        explosionPool = new ExplosionPool(atlas);
+
+        playerShip = new PlayerShip(atlas, bulletPool, explosionPool);
+
+        enemyPool = new EnemyPool(worldBounds, bulletPool, explosionPool);
+        enemyEmitter = new EnemyEmitter(atlas, enemyPool);
 
         stars = new Star[STARS_COUNT];
         for (int i = 0; i < stars.length; i++) {
@@ -61,6 +71,7 @@ public class GameScreen extends BaseScreen {
     public void resize(Rect worldBounds) {
         background.resize(worldBounds);
         playerShip.resize(worldBounds);
+        enemyEmitter.resize(worldBounds);
         for (Star star : stars) {
             star.resize(worldBounds);
         }
@@ -79,11 +90,16 @@ public class GameScreen extends BaseScreen {
             star.update(delta);
         }
         bulletPool.updateActiveSprites(delta);
+        enemyPool.updateActiveSprites(delta);
+        explosionPool.updateActiveSprites(delta);
+        enemyEmitter.generate(delta);
         playerShip.update(delta);
     }
 
     private void free() {
         bulletPool.freeAllDestroyed();
+        enemyPool.freeAllDestroyed();
+        explosionPool.freeAllDestroyed();
     }
 
     private void draw() {
@@ -93,6 +109,8 @@ public class GameScreen extends BaseScreen {
             star.draw(batch);
         }
         bulletPool.drawActiveSprites(batch);
+        explosionPool.drawActiveSprites(batch);
+        enemyPool.drawActiveSprites(batch);
         playerShip.draw(batch);
         batch.end();
     }
@@ -101,8 +119,10 @@ public class GameScreen extends BaseScreen {
     public void dispose() {
         bg.dispose();
         bulletPool.dispose();
+        enemyPool.dispose();
+        explosionPool.dispose();
         atlas.dispose();
-        bulletSound.dispose();
+        playerShip.dispose();
         gameMusic.dispose();
         super.dispose();
     }
