@@ -1,7 +1,6 @@
 package ru.gromkon.sprite;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import ru.gromkon.base.ScaledButton;

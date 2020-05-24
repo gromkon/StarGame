@@ -55,4 +55,11 @@ public class EnemyShip extends Ship {
         this.damage = damage;
         this.hp = hp;
     }
+
+    public boolean isBulletCollision(Bullet bullet) {
+        return !(bullet.getRight() < getLeft() ||
+                bullet.getLeft() > getRight() ||
+                bullet.getBottom() > getTop() ||
+                bullet.getTop() < pos.y);
+    }
 }

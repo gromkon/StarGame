@@ -5,13 +5,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.gromkon.math.Rect;
-import ru.gromkon.math.Rnd;
 import ru.gromkon.pool.BulletPool;
 import ru.gromkon.pool.ExplosionPool;
 import ru.gromkon.sprite.Bullet;
 import ru.gromkon.sprite.Explosion;
 
 public class Ship extends Sprite {
+
+    protected static final float DAMAGE_ANIMATE_INTERVAL = 0.1f;
 
     protected Rect worldBounds;
 
@@ -33,6 +34,8 @@ public class Ship extends Sprite {
     private Sound bulletSound;
     private float bulletSoundVolume;
 
+    protected float damageAnimateTimer;
+
     public Ship(TextureRegion region, int rows, int cols, int frames) {
         super(region, rows, cols, frames);
 
@@ -43,6 +46,8 @@ public class Ship extends Sprite {
         bulletStartPos = new Vector2();
         bulletSound = null;
         bulletSoundVolume = 0.03f;
+
+        damageAnimateTimer = DAMAGE_ANIMATE_INTERVAL;
     }
 
     public Ship(Rect worldBounds, BulletPool bulletPool, ExplosionPool explosionPool) {
@@ -56,6 +61,8 @@ public class Ship extends Sprite {
         bulletV = new Vector2();
         bulletStartPos = new Vector2();
         bulletSoundVolume = 0.15f;
+
+        damageAnimateTimer = DAMAGE_ANIMATE_INTERVAL;
     }
 
     protected void setBulletSound(Sound bulletSound) {
@@ -70,6 +77,10 @@ public class Ship extends Sprite {
         } else {
             pos.mulAdd(v, delta);
         }
+        damageAnimateTimer += delta;
+        if (damageAnimateTimer >= DAMAGE_ANIMATE_INTERVAL) {
+            frame = 0;
+        }
     }
 
     @Override
@@ -82,6 +93,16 @@ public class Ship extends Sprite {
     public void destroy() {
         super.destroy();
         boom();
+    }
+
+    public void takeDamage(int damage) {
+        hp -= damage;
+        if (hp <= 0) {
+            hp = 0;
+            destroy();
+        }
+        damageAnimateTimer = 0f;
+        frame = 1;
     }
 
     private void boom() {
