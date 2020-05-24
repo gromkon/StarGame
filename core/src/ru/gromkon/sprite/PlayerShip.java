@@ -22,7 +22,7 @@ public class PlayerShip extends Ship {
     private static final int BULLET_DAMAGE = 1;
     private Sound bulletSound;
 
-    private static final int HP = 1;
+    private static final int HP = 50;
 
     private final float V_LEN = 0.005f;
 
@@ -53,6 +53,28 @@ public class PlayerShip extends Ship {
         vResistX = new Vector2();
         vResistY = new Vector2();
     }
+
+    public void setStartOptions() {
+        System.out.println(getClass().getName() + " setStartOptions");
+
+        hp = HP;
+
+        v.set(0, 0);
+        touch.set(0, 0);
+        common.set(0, 0);
+        vResistX.set(0, 0);
+        vResistY.set(0, 0);
+
+        bulletStartPos.set(0, 0);
+
+        damageAnimateTimer = DAMAGE_ANIMATE_INTERVAL;
+
+        setBottom(worldBounds.getBottom() + OFFSET_BOTTOM);
+        setLeft(worldBounds.getLeft() + worldBounds.getHalfWidth() - getHalfWidth());
+
+        destroyed = false;
+    }
+
 
     @Override
     public void update(float delta) {

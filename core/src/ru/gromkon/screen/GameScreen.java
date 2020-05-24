@@ -34,13 +34,13 @@ public class GameScreen extends BaseScreen {
     private TextureAtlas atlas;
     private PlayerShip playerShip;
     private BulletPool bulletPool;
-    private GameOver gameOver;
 
     private EnemyEmitter enemyEmitter;
     private EnemyPool enemyPool;
 
     private ExplosionPool explosionPool;
 
+    private GameOver gameOver;
     private ButtonNewGame buttonNewGame;
 
     private Star[] stars;
@@ -82,6 +82,23 @@ public class GameScreen extends BaseScreen {
 
         state = State.PLAYING;
 
+    }
+
+    public void setStartOptions() {
+        List<EnemyShip> enemyShips = enemyPool.getActiveObjects();
+        for (EnemyShip enemyShip: enemyShips) {
+            enemyShip.endGame();
+        }
+        enemyPool.freeAllDestroyed();
+        List<Bullet> bullets = bulletPool.getActiveObjects();
+        for (Bullet bullet: bullets) {
+            bullet.destroy();
+        }
+        bulletPool.freeAllDestroyed();
+
+        enemyEmitter.setStartOptions();
+
+        playerShip.setStartOptions();
     }
 
 

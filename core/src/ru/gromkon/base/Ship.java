@@ -89,6 +89,10 @@ public class Ship extends Sprite {
         this.worldBounds = worldBounds;
     }
 
+    public void endGame() {
+        super.destroy();
+    }
+
     @Override
     public void destroy() {
         super.destroy();
