@@ -9,6 +9,7 @@ import ru.gromkon.pool.BulletPool;
 import ru.gromkon.pool.ExplosionPool;
 import ru.gromkon.sprite.Bullet;
 import ru.gromkon.sprite.Explosion;
+import ru.gromkon.sprite.PlayerShip;
 
 public class Ship extends Sprite {
 
@@ -97,6 +98,10 @@ public class Ship extends Sprite {
     public void destroy() {
         super.destroy();
         boom();
+    }
+
+    public int getHp() {
+        return hp;
     }
 
     public void takeDamage(int damage) {

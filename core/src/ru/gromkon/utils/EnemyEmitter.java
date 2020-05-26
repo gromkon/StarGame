@@ -8,10 +8,13 @@ import ru.gromkon.math.Rect;
 import ru.gromkon.math.Rnd;
 import ru.gromkon.pool.EnemyPool;
 import ru.gromkon.sprite.EnemyShip;
+import ru.gromkon.sprite.PlayerShip;
 
 public class EnemyEmitter {
 
 //------------------- ENEMY_SMALL -------------------
+    private static final String ENEMY_SMALL_TYPE = "small";
+
     private static final float ENEMY_SMALL_HEIGHT = 0.1f;
     private static final int ENEMY_SMALL_BULLET_DAMAGE = 5;
     private static final int ENEMY_SMALL_HP = 1;
@@ -28,6 +31,8 @@ public class EnemyEmitter {
 
 
 //------------------- ENEMY_MEDIUM -------------------
+    private static final String ENEMY_MEDIUM_TYPE = "medium";
+
     private static final float ENEMY_MEDIUM_HEIGHT = 0.15f;
     private static final int ENEMY_MEDIUM_BULLET_DAMAGE = 10;
     private static final int ENEMY_MEDIUM_HP = 5;
@@ -44,6 +49,8 @@ public class EnemyEmitter {
 
 
 //------------------- ENEMY_BIG -------------------
+    private static final String ENEMY_BIG_TYPE = "big";
+
     private static final float ENEMY_BIG_HEIGHT = 0.2f;
     private static final int ENEMY_BIG_BULLET_DAMAGE = 20;
     private static final int ENEMY_BIG_HP = 10;
@@ -59,6 +66,8 @@ public class EnemyEmitter {
 //------------------- ENEMY_BIG -------------------
 
     private Rect worldBounds;
+
+    private PlayerShip playerShip;
 
     private float generateIntervalSmall;
     private float generateTimerSmall;
@@ -81,13 +90,15 @@ public class EnemyEmitter {
 
     private final EnemyPool enemyPool;
 
-    public EnemyEmitter(TextureAtlas atlas, EnemyPool enemyPool) {
+    public EnemyEmitter(TextureAtlas atlas, EnemyPool enemyPool, PlayerShip playerShip) {
         enemySmallRegions = Regions.split(atlas.findRegion("enemy0"), 1, 2, 2);
         enemyMediumRegions = Regions.split(atlas.findRegion("enemy1"), 1, 2, 2);
         enemyBigRegions = Regions.split(atlas.findRegion("enemy2"), 1, 2, 2);
         enemyBulletRegion = atlas.findRegion("bulletEnemy");
 
         this.enemyPool = enemyPool;
+
+        this.playerShip = playerShip;
 
         enemySmallV = new Vector2(ENEMY_SMALL_VX, ENEMY_SMALL_VY);
         enemyMediumV = new Vector2(ENEMY_MEDIUM_VX, ENEMY_MEDIUM_VY);
@@ -119,6 +130,8 @@ public class EnemyEmitter {
             generateTimerSmall = 0f;
             EnemyShip enemy = enemyPool.obtain();
             enemy.set(
+                    playerShip,
+                    ENEMY_SMALL_TYPE,
                     enemySmallRegions,
                     enemySmallV,
                     enemyBulletRegion,
@@ -145,6 +158,8 @@ public class EnemyEmitter {
             generateTimerSmall -= 0.5f;
             EnemyShip enemy = enemyPool.obtain();
             enemy.set(
+                    playerShip,
+                    ENEMY_MEDIUM_TYPE,
                     enemyMediumRegions,
                     enemyMediumV,
                     enemyBulletRegion,
@@ -172,6 +187,8 @@ public class EnemyEmitter {
             generateTimerSmall -= 3f;
             EnemyShip enemy = enemyPool.obtain();
             enemy.set(
+                    playerShip,
+                    ENEMY_BIG_TYPE,
                     enemyBigRegions,
                     enemyBigV,
                     enemyBulletRegion,
@@ -195,5 +212,17 @@ public class EnemyEmitter {
         generateTimerSmall = 0f;
         generateTimerMedium = 0f;
         generateTimerBig = 0f;
+    }
+
+    public static String getEnemySmallType() {
+        return ENEMY_SMALL_TYPE;
+    }
+
+    public static String getEnemyMediumType() {
+        return ENEMY_MEDIUM_TYPE;
+    }
+
+    public static String getEnemyBigType() {
+        return ENEMY_BIG_TYPE;
     }
 }

@@ -22,6 +22,7 @@ import ru.gromkon.sprite.PlayerShip;
 import ru.gromkon.sprite.Star;
 import ru.gromkon.sprite.State;
 import ru.gromkon.utils.EnemyEmitter;
+import ru.gromkon.utils.Statistics;
 
 
 public class GameScreen extends BaseScreen {
@@ -33,15 +34,18 @@ public class GameScreen extends BaseScreen {
 
     private TextureAtlas atlas;
     private PlayerShip playerShip;
-    private BulletPool bulletPool;
 
     private EnemyEmitter enemyEmitter;
     private EnemyPool enemyPool;
+
+    private BulletPool bulletPool;
 
     private ExplosionPool explosionPool;
 
     private GameOver gameOver;
     private ButtonNewGame buttonNewGame;
+
+    private Statistics statistics;
 
     private Star[] stars;
 
@@ -64,11 +68,13 @@ public class GameScreen extends BaseScreen {
         playerShip = new PlayerShip(atlas, bulletPool, explosionPool);
 
         enemyPool = new EnemyPool(worldBounds, bulletPool, explosionPool);
-        enemyEmitter = new EnemyEmitter(atlas, enemyPool);
+        enemyEmitter = new EnemyEmitter(atlas, enemyPool, playerShip);
 
         gameOver = new GameOver(atlas);
 
         buttonNewGame = new ButtonNewGame(atlas, this);
+
+        statistics = new Statistics();
 
         stars = new Star[STARS_COUNT];
         for (int i = 0; i < stars.length; i++) {
@@ -98,6 +104,8 @@ public class GameScreen extends BaseScreen {
 
         enemyEmitter.setStartOptions();
 
+        statistics.setStartOptions();
+
         playerShip.setStartOptions();
     }
 
@@ -112,6 +120,7 @@ public class GameScreen extends BaseScreen {
         }
         gameOver.resize(worldBounds);
         buttonNewGame.resize(worldBounds);
+        statistics.resize(worldBounds);
     }
 
     @Override
@@ -133,6 +142,8 @@ public class GameScreen extends BaseScreen {
             enemyPool.updateActiveSprites(delta);
             enemyEmitter.generate(delta);
             playerShip.update(delta);
+        } else if (state == State.GAME_OVER) {
+            buttonNewGame.update(delta);
         }
     }
 
@@ -159,6 +170,9 @@ public class GameScreen extends BaseScreen {
                     }
                 }
             }
+            if (enemy.isDestroyed()) {
+                statistics.frag(enemy.getType(), enemy.isDeathFromOutOfScreen());
+            }
         }
         for (Bullet bullet: bulletList) {
             if (bullet.getOwner() != playerShip && !bullet.isDestroyed()) {
@@ -170,6 +184,8 @@ public class GameScreen extends BaseScreen {
         }
         if (playerShip.isDestroyed()) {
             state = State.GAME_OVER;
+        } else {
+            statistics.setHp(playerShip.getHp());
         }
     }
 
@@ -190,6 +206,7 @@ public class GameScreen extends BaseScreen {
             bulletPool.drawActiveSprites(batch);
             enemyPool.drawActiveSprites(batch);
             playerShip.draw(batch);
+            statistics.drawStat(batch);
         } else if (state == State.GAME_OVER) {
             gameOver.draw(batch);
             buttonNewGame.draw(batch);
@@ -197,6 +214,7 @@ public class GameScreen extends BaseScreen {
         explosionPool.drawActiveSprites(batch);
         batch.end();
     }
+
 
     public void setState(State state) {
         this.state = state;
@@ -211,6 +229,7 @@ public class GameScreen extends BaseScreen {
         atlas.dispose();
         playerShip.dispose();
         gameMusic.dispose();
+        statistics.dispose();
         super.dispose();
     }
 
