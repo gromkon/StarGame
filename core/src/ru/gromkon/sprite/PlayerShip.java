@@ -22,7 +22,7 @@ public class PlayerShip extends Ship {
     private static final int BULLET_DAMAGE = 1;
     private Sound bulletSound;
 
-    private static final int HP = 100;
+    private static final int HP = 50;
 
     private final float V_LEN = 0.005f;
 
@@ -54,12 +54,39 @@ public class PlayerShip extends Ship {
         vResistY = new Vector2();
     }
 
+    public void setStartOptions() {
+        System.out.println(getClass().getName() + " setStartOptions");
+
+        hp = HP;
+
+        v.set(0, 0);
+        touch.set(0, 0);
+        common.set(0, 0);
+        vResistX.set(0, 0);
+        vResistY.set(0, 0);
+
+        bulletStartPos.set(0, 0);
+
+        damageAnimateTimer = DAMAGE_ANIMATE_INTERVAL;
+
+        setBottom(worldBounds.getBottom() + OFFSET_BOTTOM);
+        setLeft(worldBounds.getLeft() + worldBounds.getHalfWidth() - getHalfWidth());
+
+        destroyed = false;
+    }
+
+
     @Override
     public void update(float delta) {
         bulletStartPos.set(pos).add(0, getHalfWidth());
         checkShoot(delta, bulletStartPos);
 
         checkMove();
+
+        damageAnimateTimer += delta;
+        if (damageAnimateTimer >= DAMAGE_ANIMATE_INTERVAL) {
+            frame = 0;
+        }
     }
 
     private void checkMove() {
@@ -120,6 +147,13 @@ public class PlayerShip extends Ship {
         v.set(touch.sub(pos).setLength(V_LEN));
         vResistX.set(-v.x, 0);
         vResistY.set(0, -v.y);
+    }
+
+    public boolean isBulletCollision(Bullet bullet) {
+        return !(bullet.getRight() < getLeft() ||
+                bullet.getLeft() > getRight() ||
+                bullet.getBottom() > (pos.y + getHalfHeight() / 1.75) ||
+                bullet.getTop() < getBottom());
     }
 
     public void dispose() {

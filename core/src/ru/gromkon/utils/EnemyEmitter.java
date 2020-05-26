@@ -190,4 +190,10 @@ public class EnemyEmitter {
             enemy.setBottom(worldBounds.getTop());
         }
     }
+
+    public void setStartOptions() {
+        generateTimerSmall = 0f;
+        generateTimerMedium = 0f;
+        generateTimerBig = 0f;
+    }
 }

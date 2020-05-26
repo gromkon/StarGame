@@ -45,6 +45,7 @@ public class EnemyShip extends Ship {
     ) {
         this.regions = regions;
         this.v = v;
+        this.v0.set(v.cpy().add(v).add(v));
         this.bulletRegion = bulletRegion;
         this.bulletHeight = bulletHeight;
         this.bulletV.set(bulletVX, bulletVY);
@@ -53,5 +54,12 @@ public class EnemyShip extends Ship {
         setHeightProportion(height);
         this.damage = damage;
         this.hp = hp;
+    }
+
+    public boolean isBulletCollision(Bullet bullet) {
+        return !(bullet.getRight() < getLeft() ||
+                bullet.getLeft() > getRight() ||
+                bullet.getBottom() > getTop() ||
+                bullet.getTop() < pos.y);
     }
 }
