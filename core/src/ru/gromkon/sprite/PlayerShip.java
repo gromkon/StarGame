@@ -22,7 +22,7 @@ public class PlayerShip extends Ship {
     private static final int BULLET_DAMAGE = 1;
     private Sound bulletSound;
 
-    private static final int HP = 50;
+    private static final int HP = 100;
 
     private final float V_LEN = 0.005f;
 
@@ -72,7 +72,11 @@ public class PlayerShip extends Ship {
         setBottom(worldBounds.getBottom() + OFFSET_BOTTOM);
         setLeft(worldBounds.getLeft() + worldBounds.getHalfWidth() - getHalfWidth());
 
-        destroyed = false;
+        flushDestroy();
+    }
+
+    public static int getHP() {
+        return HP;
     }
 
 

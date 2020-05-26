@@ -12,18 +12,24 @@ import ru.gromkon.pool.ExplosionPool;
 
 public class EnemyShip extends Ship {
 
+    private PlayerShip playerShip;
+
+    private boolean deathFromOutOfScreen;
+
+    private String type;
+
     public EnemyShip(Rect worldBounds, BulletPool bulletPool, ExplosionPool explosionPool, Sound bulletSound) {
         super(worldBounds, bulletPool, explosionPool);
         super.setBulletSound(bulletSound);
+        deathFromOutOfScreen = false;
     }
 
     @Override
     public void update(float delta) {
-//        if (isOutside(worldBounds)) {
-//            destroy();
-//        }
-        if (getBottom() < worldBounds.getBottom()) {
-            destroy();
+        if (getTop() < worldBounds.getBottom()) {
+            playerShip.takeDamage(damage * 2);
+            deathFromOutOfScreen = true;
+            endGame();
         }
         super.update(delta);
         bulletStartPos.set(pos).add(0, -getHalfWidth());
@@ -31,7 +37,17 @@ public class EnemyShip extends Ship {
 
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public boolean isDeathFromOutOfScreen() {
+        return deathFromOutOfScreen;
+    }
+
     public void set(
+            PlayerShip playerShip,
+            String type,
             TextureRegion[] regions,
             Vector2 v,
             TextureRegion bulletRegion,
@@ -43,6 +59,8 @@ public class EnemyShip extends Ship {
             int damage,
             int hp
     ) {
+        this.playerShip = playerShip;
+        this.type = type;
         this.regions = regions;
         this.v = v;
         this.v0.set(v.cpy().add(v).add(v));
